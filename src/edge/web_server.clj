@@ -12,7 +12,8 @@
    [edge.examples :refer [authentication-example-routes]]
    [edge.phonebook :refer [phonebook-routes]]
    [edge.phonebook-app :refer [phonebook-app-routes]]
-   [edge.hello :refer [hello-routes other-hello-routes]]
+   [edge.hello :refer [clock-route other-hello-routes
+                       ]]
    [selmer.parser :as selmer]
    [yada.resources.webjar-resource :refer [new-webjar-resource]]
    [yada.yada :refer [handler resource] :as yada]))
@@ -37,7 +38,8 @@
 
     [""
      (-> (yada/as-resource (io/file "target"))
-         (assoc :id :edge.resources/static))]]])
+         (assoc :id :edge.resources/static))]]
+  ])
 
 (defn routes
   "Create the URI route structure for our application."
@@ -45,7 +47,7 @@
   [""
    [
     ;; Hello World!
-    (hello-routes)
+    (clock-route)
     (other-hello-routes)
 
     (phonebook-routes db config)
@@ -53,7 +55,7 @@
 
     (authentication-example-routes)
 
-    ["/api" (-> (hello-routes)
+    ["/api" (-> (clock-route)
                 ;; Wrap this route structure in a Swagger
                 ;; wrapper. This introspects the data model and
                 ;; provides a swagger.json file, used by Swagger UI

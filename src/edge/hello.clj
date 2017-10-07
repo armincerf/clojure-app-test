@@ -3,10 +3,19 @@
 (ns edge.hello
   "Demonstrating a simple example of a yada web resource"
   (:require
-   [yada.yada :as yada]))
-
-(defn hello-routes []
-  ["/hello" (yada/handler "Hello World!\n")])
+   [yada.yada :as yada]
+   [selmer.parser :as selmer]
+   [clojure.java.io :as io]))
+(defn clock-route []
+  ["/clock"  (yada/resource
+              {:id :edge.resources/clock
+               :methods
+               {:get
+                {:produces #{"text/html"}
+                 :response (fn [ctx]
+                             (selmer/render-file "clock.html" {:title "Clock"
+                                                               :ctx ctx}))}}})])
+ 
 
 (defn hello-language []
   ["/hello-language"
@@ -19,11 +28,11 @@
        :response
        #(case (yada/language %)
           "zh-ch" "你好世界\n"
-          "en" "Hello World!\n")}}})])
+          "en" "Hello bad World!\n")}}})])
 
 (defn hello-atom []
   ["/hello-atom"
-   (yada/as-resource (atom "Hello World!\n"))])
+   (yada/as-resource (atom "Hello Bad World!\n"))])
 
 (defn hello-parameter []
   ["/hello-parameter"
