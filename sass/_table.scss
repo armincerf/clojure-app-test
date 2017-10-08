@@ -23,7 +23,7 @@ input {
 }
 
 button {
-    background: green;
+    background: blue;
     color: white;
     border: 0px solid black;
     padding: 0.5em;
@@ -42,4 +42,10 @@ button[disabled=disabled],
 button:disabled {
     background: #ccc;
     color: #eee;
+}
+
+.clock {
+    font-size: 300%;
+    line-height: 1.2em;
+    font-family: HelveticaNeue-UltraLight, Helvetica;
 }

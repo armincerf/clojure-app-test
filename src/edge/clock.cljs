@@ -3,11 +3,16 @@
 
  (enable-console-print!)
 
-(def clock-state (r/atom {:current-time (js/Date.)}))
+(defonce time-atom (r/atom (js/Date.)))
+
+(defonce time-updater (js/setInterval
+                       #(reset! time-atom (js/Date.)) 1000))
+
+(defonce time-colour (r/atom "#16a"))
 
 (def stopwatch-state (atom 0)) ;;0 represents pause, 1 start
 
-(def clock-atom (atom 0))
+(def clock-atom (r/atom 0))
 
 (def start-time (atom 0))
 
@@ -15,15 +20,17 @@
 
 (defonce interval (atom 0))
 
-
+(defn colour-input []
+  [:div.colour-input
+   "Time colour: "
+   [:input {:type "text"
+            :value @time-colour
+            :on-change #(reset! time-colour (-> % .-target .-value))}]])
 
 (defn stopwatch-started? [] 
   (if (= @stopwatch-state 0)
     false
     true))
-
-(defn tick [] dosync
-  (swap! clock-state assoc :current-time (js/Date.)))
 
 (defn seconds-to-time [secs]
   (let [d (js/Date. (* 10 secs))]
@@ -61,18 +68,24 @@
   (js/clearInterval @interval)
   (reset! clock-atom @start-time))
 
+(defn timefn []
+  (let [time-str (-> @time-atom .toTimeString (clojure.string/split " ") first)]
+    [:div.clock
+     {:style {:color @time-colour}}
+     time-str]))
+
  (defn clock []
-   (let [time-now (:current-time @clock-state)]
-     [:div.clock
-      [:h1 "Date = " (str time-now)]
-      [:h1  "stopwatch = " (display-time (seconds-to-time @clock-atom))]
-      [:button {:on-click (fn [ev] (start))} "Start!"]
-      [:button {:on-click (fn [ev] (pause))} "Pause!"]
-      [:button {:on-click (fn [ev] (reset))} "Reset!"]]))
+   [:div
+    [:h1 "Current Time is:" [timefn]]
+    [colour-input]
+    [:h1.clock  (display-time (seconds-to-time @clock-atom))]
+    [:button {:on-click (fn [ev] (start))} "Start!"]
+    [:button {:on-click (fn [ev] (pause))} "Pause!"]
+    [:button {:on-click (fn [ev] (reset))} "Reset!"]])
 
 
 
 (defn init [section]
-  (.setInterval js/window tick 100)
+  
   (r/render-component [clock] section))
 
