@@ -70,6 +70,9 @@
    ;; App deps
    [reagent "0.7.0"]
    [com.cognitect/transit-clj "0.8.300"]
+   [dm3/stopwatch "0.1.0"]
+   [com.andrewmcveigh/cljs-time "0.5.0"]
+
 
    ;; Logging
    [org.clojure/tools.logging "0.4.0"]

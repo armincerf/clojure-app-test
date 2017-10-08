@@ -1,5 +1,7 @@
 # Edge
 
+-- This project uses juxt/Edge as a starting point, the original readme is below.
+
 From "Datum edge". Also represents the 'edge' of our current thinking
 on the baseline architecture of Clojure projects. It contains
 architectural patterns for the rapid construction of robust and
