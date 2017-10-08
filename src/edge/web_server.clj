@@ -12,8 +12,7 @@
    [edge.examples :refer [authentication-example-routes]]
    [edge.phonebook :refer [phonebook-routes]]
    [edge.phonebook-app :refer [phonebook-app-routes]]
-   [edge.hello :refer [clock-route other-hello-routes
-                       ]]
+   [edge.hello :refer [clock-route other-hello-routes]]
    [selmer.parser :as selmer]
    [yada.resources.webjar-resource :refer [new-webjar-resource]]
    [yada.yada :refer [handler resource] :as yada]))

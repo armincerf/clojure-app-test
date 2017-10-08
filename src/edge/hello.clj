@@ -12,10 +12,18 @@
                :methods
                {:get
                 {:produces #{"text/html"}
-                 :response (fn [ctx]
+                 :response (fn [ctx] 
                              (selmer/render-file "clock.html" {:title "Clock"
                                                                :ctx ctx}))}}})])
- 
+(defn pomodoro-route []
+  ["/pomodoro"  (yada/resource
+              {:id :edge.resources/pomodoro
+               :methods
+               {:get
+                {:produces #{"text/html"}
+                 :response (fn [ctx] 
+                             (selmer/render-file "pomodoro.html" {:title "Pomodoro Timer"
+                                                               :ctx ctx}))}}})])
 
 (defn hello-language []
   ["/hello-language"
@@ -49,4 +57,5 @@
        (hello-language)
        (hello-atom)
        (hello-parameter)
+       (pomodoro-route)
        ]])
