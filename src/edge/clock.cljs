@@ -6,6 +6,7 @@
 
 
 (def clock-state (r/atom {:current-time (js/Date.)}))
+
 (def stopwatch-state (atom 0)) ;0 represents pause, 1 start
 
 (defn tick [] dosync
@@ -27,10 +28,11 @@
                 n))
         mm (pad (:minutes tm))
         ss (pad (:seconds tm))]
-    (str mm "::" ss)))
+    (str mm ":" ss)))
 
 (def clock-atom (atom 0))
 (def start-time (atom 0))
+
 (def time-fn (atom inc)) ;; included so we can swap it out for countdowns
 
 (defn keep-time [func]
@@ -52,11 +54,18 @@
       (reset! interval (js/setInterval #(keep-time @time-fn) 1000)))))
 
 (defn reset []
+  (reset! stopwatch-state 0)
   (js/clearInterval @interval)
   (reset! clock-atom @start-time))
 
+
+
+
+
+
  (defn clock []
-   (let [time-now (:current-time @clock-state)]
+   (let [time-now (:current-time @clock-state)
+         val (r/atom 5)]
      [:div.clock
       [:h1 "time = " (str time-now)]
       [:h1  "stopwatch = " (display-time (seconds-to-time @clock-atom))]
@@ -65,7 +74,7 @@
       [:button {:on-click (fn [ev] (pause))} "Pause!"]
       [:button {:on-click (fn [ev] (reset))} "Reset!"]]))
 
-(.setInterval js/window tick 1000)
+(.setInterval js/window tick 500)
 
 (defn init [section]
  (r/render-component [clock] section))

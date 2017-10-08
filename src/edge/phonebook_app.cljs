@@ -57,7 +57,7 @@
                            (first (:current state)))]
     (not= (second (:current state)) db-entry)))
 
-(defn chager [path]
+(defn changer [path]
   (fn [ev]
     (swap! app-state assoc-in path (.-value (.-target ev)))))
 
