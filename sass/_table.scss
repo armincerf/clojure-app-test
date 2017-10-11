@@ -44,8 +44,29 @@ button:disabled {
     color: #eee;
 }
 
-.clock {
+.show-work {
     font-size: 300%;
     line-height: 1.2em;
     font-family: HelveticaNeue-UltraLight, Helvetica;
 }
+
+.hide {
+    display: none;
+}
+
+@keyframes warn {
+    0%   {background: white;}
+    100% {background: red;}
+}
+
+ .show-break {
+    font-size: 300%;
+    line-height: 1.2em;
+    font-family: HelveticaNeue-UltraLight, Helvetica;
+    }
+
+ .warning {
+    color: orange;
+    animation:warn 1s infinite;
+}
+

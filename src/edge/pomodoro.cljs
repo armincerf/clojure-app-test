@@ -5,15 +5,19 @@
 
 (defonce interval (atom 0))
 
-(def time-active (atom 0))
+(def time-active (r/atom 0)) ;doesnt work as boolean? not sure why..
 
-(def timer (r/atom 150000))
+(def start-timer (r/atom 150000))
+
+(def break-timer (r/atom 1500))
 
 (def start-time (r/atom 25))
 
 (def break-time (r/atom 5))
 
 (def time-fn (atom dec))
+
+(def break-time? (r/atom 0))
 
 (defn time-active? []
   (if (= @time-active 0)
@@ -38,8 +42,19 @@
     (str mm ":" ss ":" ms)))
 
 (defn keep-time [func]
-  (display-time (seconds-to-time @timer))
-  (swap! timer func))
+  (if (zero? @break-timer)
+    (do
+      (reset)
+      
+      (start)))
+  (if (zero? @start-timer)
+    (do
+      (reset! break-time? 1)
+      (swap! break-timer func))
+    (do
+      (reset! break-time? 0)
+      
+      (swap! start-timer func))))
 
 (defn pause []
   (when (time-active?)
@@ -51,13 +66,15 @@
   (reset! interval (js/setInterval #(keep-time @time-fn) 10)))
 
 (defn reset []
-  (let [starting (fn [n] ;; cap at 59 mins
+  (let [starting (fn [n] ;; cap input at 59 mins
                    (if (< n 60)
                      n
                      59))]
+    (reset! break-time? 0)
     (reset! time-active 0)
     (js/clearInterval @interval)
-    (reset! timer (* 60 (* 100 (starting  @start-time))))))
+    (reset! start-timer (* 60 (* 100 (starting  @start-time))))
+    (reset! break-timer (* 60 (* 100 @break-time)))))
 
 (defn start-time-input []
   [:div.start-input
@@ -75,11 +92,26 @@
             :on-change #(reset! break-time (-> % .-target .-value))}]
    [:button {:on-click (fn [ev] (reset))} "Set!"]])
 
-(defn clock []
+
+
+(defn work-clock []
   [:div
+   [:h1 (when (time-active?)
+          (if (zero? @break-time?)
+            "Get to work!!"
+            "Break time!!")) ]
    [start-time-input]
    [break-time-input]
-   [:h1.clock  (display-time (seconds-to-time @timer))]
+   [:h1.work-clock  {:class (if (zero? @break-time?)
+                              "show-work"                              
+                              "hide"                             
+                              )} (display-time (seconds-to-time @start-timer))]
+   [:h1.break-clock {:class (if (zero? @break-time?)
+                              "hide"
+                              (if (< @break-timer 3000)
+                                "show-break warning"
+                                "show-break")
+                              )} (display-time (seconds-to-time @break-timer))]
    [:button {:on-click (fn [ev] (start))} "Start!"]
    [:button {:on-click (fn [ev] (pause))} "Pause!"]
    [:button {:on-click (fn [ev] (reset))} "Reset!"]])
@@ -88,6 +120,6 @@
 
 (defn init [section]
   
-  (r/render-component [clock] section))
+  (r/render-component [work-clock] section))
 
 
