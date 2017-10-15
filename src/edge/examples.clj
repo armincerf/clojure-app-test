@@ -6,7 +6,8 @@
    [hiccup.page :refer [html5]]
    yada.bidi
    [yada.yada :as yada]
-   [yada.security :refer [verify]]))
+   [yada.security :refer [verify]]
+   [selmer.parser :as selmer]))
 
 (extend-protocol bidi.bidi/Matched
   clojure.lang.Var
@@ -17,7 +18,8 @@
   (html5
    [:body
     [:h1 (format "Hello %s!" (get-in ctx [:authentication "default" :user]))]
-    [:p "You're accessing a restricted resource!"]
+    [:section#pomodoro]
+    [:p "Initialisting..."]
     [:pre (pr-str (get-in ctx [:authentication "default"]))]]))
 
 ;; Basic Authentication --------------------------------------------------------------
@@ -27,7 +29,9 @@
    {:id :edge.resources/basic-authn-example
     :methods
     {:get {:produces "text/html"
-           :response (fn [ctx] (restricted-content ctx))}}
+           :response (fn [ctx] 
+                             (selmer/render-file "pomodoro.html" {:title "Pomodoro Timer"
+                                                               :ctx ctx}))}}
 
     :access-control
     {:scheme "Basic"
@@ -107,10 +111,11 @@
 
 (def cookie-based-restricted-resource
   (yada/resource
-   {:id :edge.resources/restricted-example
+   {:id :edge.resources/pomodoro-auth
     :methods
     {:get {:produces "text/html"
-           :response (fn [ctx] (restricted-content ctx))}}
+           :response (fn [ctx] (selmer/render-file "pomodoro.html" {:title "Pomodoro Timer"
+                                                               :ctx ctx}))}}
     :access-control
     {:scheme :edge/signed-cookie
      :authorization {:methods {:get :user}}}}))
@@ -145,10 +150,10 @@
           (merge
            (:response ctx)
            (if-not (#{"alice" "dave"} user)
-             {:body "Login failed"
+             {:body "Login has failed"
               :status 401}
              {:status 303
-              :headers {"location" (yada/url-for ctx :edge.resources/restricted-example)}
+              :headers {"location" (yada/url-for ctx :edge.resources/pomodoro-auth)}
               :cookies
               {"session"
                {:value
@@ -165,5 +170,5 @@
     ["/custom-static" #'custom-auth-static-resource-example]
     ["/custom-trusted-header" #'custom-auth-trusted-header-resource-example]
     ["/custom-signed-header" #'custom-auth-signed-header-resource-example]
-    ["/restricted-by-cookie" #'cookie-based-restricted-resource]
+    ["/pomodoro-auth" #'cookie-based-restricted-resource]
     ["/login" #'login-resource-example]]])

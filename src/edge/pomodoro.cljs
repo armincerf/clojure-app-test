@@ -29,7 +29,7 @@
      :milliseconds (.getUTCMilliseconds d)}))
 
 (defn display-time [tm]
-"return str of mins secs and millisecs with padding"
+"return str of mins:secs:millisecs with leading 0 on single digits "
   (let [pad (fn [n]
               (if (< n 10)
                 (str "0" n)
